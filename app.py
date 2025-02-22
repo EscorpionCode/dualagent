@@ -5,7 +5,7 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 
 
-# Clase para gestionar la memoria (sin cambios)
+# Clase para gestionar la memoria
 class ChatMemory:
     def __init__(self):
         self.history = []
@@ -45,7 +45,7 @@ def call_generator_api(
         raise Exception(f"Error Gemini: {response.status_code}, {response.text}")
 
 
-# Función para Evaluador (sin cambios)
+# Función para Evaluador
 def call_evaluator_api(
     prompt, api_key, model="deepseek-ai/DeepSeek-R1"
 ):  # Modelo Mistral disponible en together.ai
@@ -83,13 +83,23 @@ def chatbot(api_key_gemini, api_key_together):
 
         # Agent 1: Ahora usando Gemini
         prompt_generator = f"Genera una respuesta detallada para: {user_input}"
-        initial_response = call_generator_api(
-            prompt_generator, api_key_gemini
-        )  # pasa la api key correcta
+        try:
+            initial_response = call_generator_api(
+                prompt_generator, api_key_gemini
+            )  # pasa la api key correcta
+        except Exception as e:
+            console.print(f"[red]Error: Error en Agent 1 Gemini:[/red] {e}")
+            initial_response = (
+                "Lo siento, no puedo generar una respuesta en este momento."
+            )
 
-        # Agent 2: Evaluador (se mantiene igual)
+        # Agent 2: Evaluador
         prompt_evaluator = f"Evalúa esta respuesta y implementa mejoras/optimizaciones: {initial_response}"
-        improved_response = call_evaluator_api(prompt_evaluator, api_key_together)
+        try:
+            improved_response = call_evaluator_api(prompt_evaluator, api_key_together)
+        except Exception as e:
+            console.print(f"[red]Error: Error en Agent 2 Evaluador:[/red] {e}")
+            improved_response = initial_response
 
         # Mostrar respuesta con Markdown
         markdown = Markdown(f"{improved_response}")
