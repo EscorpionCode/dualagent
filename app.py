@@ -37,10 +37,15 @@ def call_generator_api(
         response_json = response.json()
 
         # Extraer la respuesta de Gemini
-        try:
+        if (
+            "candidates" in response_json
+            and response_json["candidates"]
+            and "content" in response_json["candidates"][0]
+            and "parts" in response_json["candidates"][0]["content"]
+            and response_json["candidates"][0]["content"]["parts"]
+        ):
             return response_json["candidates"][0]["content"]["parts"][0]["text"]
-        except (KeyError, IndexError):
-            return "Error: Formato de respuesta inesperado de Gemini"
+        return "Error: Formato de respuesta inesperado de Gemini"
     else:
         raise Exception(f"Error Gemini: {response.status_code}, {response.text}")
 
