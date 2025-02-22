@@ -1,5 +1,7 @@
 import requests
 import sys
+import os
+import argparse
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
@@ -99,7 +101,7 @@ def chatbot(api_key_gemini, api_key_together):
             )
 
         # Agent 2: Evaluador
-        prompt_evaluator = f"Evalúa esta respuesta y implementa mejoras/optimizaciones: {initial_response}"
+        prompt_evaluator = f"Evalúa esta respuesta e implementa mejoras/optimizaciones: {initial_response}"
         try:
             improved_response = call_evaluator_api(prompt_evaluator, api_key_together)
         except Exception as e:
@@ -115,20 +117,31 @@ def chatbot(api_key_gemini, api_key_together):
 
 # ---  MAIN  ---
 if __name__ == "__main__":
-    # Configuración y ejecución.  Pide las claves si no se han puesto.
-    console = Console()
+    # Configuración y ejecución. Pide las claves si no se han puesto.
 
-    # Obtener API key de Google / Gemini
-    google_api_key = ""
+    parser = argparse.ArgumentParser(
+        description="Chatbot using Gemini and Together.AI APIs"
+    )
+
+    parser.add_argument(
+        "-g", "--google-api-key", type=str, help="API Key for Google Gemini"
+    )
+    parser.add_argument(
+        "-t", "--together-api-key", type=str, help="API Key for Together.AI"
+    )
+
+    args = parser.parse_args()
+
+    google_api_key = args.google_api_key or os.getenv("GEMINI_API_KEY")
     if not google_api_key:
-        console.print("[red]Error: Debes proporcionar una API key de Google.[/red]")
-        sys.exit(1)
-
-    # Obtener API key de Together.AI
-    together_api_key = ""
-    if not together_api_key:
-        console.print(
-            "[red]Error: Debes proporcionar una API key de Together.AI.[/red]"
+        google_api_key = Prompt.ask(
+            "[yellow]Introduce tu API Key de Google Gemini:[/yellow]", password=True
         )
-        sys.exit(1)
+
+    together_api_key = args.together_api_key or os.getenv("TOGETHER_API_KEY")
+    if not together_api_key:
+        together_api_key = Prompt.ask(
+            "[yellow]Introduce tu API Key de Together.AI:[/yellow]", password=True
+        )
+
     chatbot(google_api_key, together_api_key)
