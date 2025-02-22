@@ -118,6 +118,7 @@ def chatbot(api_key_gemini, api_key_together):
 # ---  MAIN  ---
 if __name__ == "__main__":
     # Configuración y ejecución. Pide las claves si no se han puesto.
+    console = Console()
 
     parser = argparse.ArgumentParser(
         description="Chatbot using Gemini and Together.AI APIs"
@@ -144,4 +145,8 @@ if __name__ == "__main__":
             "[yellow]Introduce tu API Key de Together.AI:[/yellow]", password=True
         )
 
-    chatbot(google_api_key, together_api_key)
+    try:
+        chatbot(google_api_key, together_api_key)
+    except KeyboardInterrupt:
+        console.print("\n[bold red]Ctrl C, bye bye![/bold red]")
+        sys.exit(0)
