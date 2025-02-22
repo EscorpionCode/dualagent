@@ -1,4 +1,5 @@
 import requests
+import sys
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     google_api_key = ""
     if not google_api_key:
         console.print("[red]Error: Debes proporcionar una API key de Google.[/red]")
-        exit()
+        sys.exit(1)
 
     # Obtener API key de Together.AI
     together_api_key = ""
@@ -114,5 +115,5 @@ if __name__ == "__main__":
         console.print(
             "[red]Error: Debes proporcionar una API key de Together.AI.[/red]"
         )
-        exit()
+        sys.exit(1)
     chatbot(google_api_key, together_api_key)
