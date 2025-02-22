@@ -15,9 +15,6 @@ class ChatMemory:
     def add_message(self, role, content):
         self.history.append({"role": role, "content": content})
 
-    def get_history(self):
-        return self.history
-
     def clear_history(self):  # Método para limpiar la memoria
         self.history = []
 
